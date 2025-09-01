@@ -1,1 +1,3 @@
+# Database
 
+This `database/` folder contains the database schema, migration scripts, seed data, and data access layer for an email package system for a college.
