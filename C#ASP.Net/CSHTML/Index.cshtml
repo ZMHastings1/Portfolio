@@ -1,0 +1,110 @@
+@page
+@model CIDM_3312_FinalProject.Pages_Tickets.IndexModel
+
+@{
+    ViewData["Title"] = "Tickets";
+}
+
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3">Tickets</h1>
+        <a asp-page="Create" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Create New Ticket
+        </a>
+    </div>
+
+<div class="row">
+    <form class="d-flex" role="search" asp-page="./Index" method="get">
+        <div class="col-3">
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input class="form-control me-2" type="search" name="CurrentSearch" value="@Model.CurrentSearch" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+    <table class="table table-striped table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>@Html.DisplayNameFor(m => m.Ticket[0].Category)</th>
+                <th>@Html.DisplayNameFor(m => m.Ticket[0].Description)</th>
+                <th>
+                    @{
+                        var firstSort = "SbDate_asc";
+                        if (Model.CurrentSort == "SbDate_asc")
+                        {
+                            firstSort = "SbDate_desc";
+                        }
+                    }
+                    <a asp-page="./Index" asp-route-CurrentSort="@firstSort" asp-route-PageNum="@Model.PageNum">@Html.DisplayNameFor(model => model.Ticket[0].SubmitDate)</a>
+                </th>
+                <th>
+                    @{
+                        var SecondSort = "Status_asc";
+                        if (Model.CurrentSort == "Status_asc")
+                        {
+                            SecondSort = "SbDate_desc";
+                        }
+                    }
+                    <a asp-page="./Index" asp-route-CurrentSort="@SecondSort" asp-route-PageNum="@Model.PageNum">@Html.DisplayNameFor(model => model.Ticket[0].Status)</a>
+                </th>
+                <th>@Html.DisplayNameFor(m => m.Ticket[0].Priority)</th>
+                <th>Submitted By</th>
+                <th>Assigned To</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        @if (Model.Ticket?.Any() ?? false)
+        {
+            foreach (var item in Model.Ticket)
+            {
+                <tr>
+                    <td>@item.Category</td>
+                    <td>@item.Description</td>
+                    <td>@item.SubmitDate.ToShortDateString()</td>
+                    <td>@item.Status</td>
+                    <td>@item.Priority</td>
+                    <td>@item.User.Name</td>
+                    <td>@item.Technician.TechName</td>
+                    <td class="text-end">
+                        <a asp-page="./Edit"    asp-route-id="@item.TicketID" class="btn btn-sm btn-outline-success">Edit</a>
+                        <a asp-page="./Details" asp-route-id="@item.TicketID" class="btn btn-sm btn-outline-dark">Details</a>
+                        <a asp-page="./Delete"  asp-route-id="@item.TicketID" class="btn btn-sm btn-outline-danger">Delete</a>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="7" class="text-center text-muted">
+                    No tickets to display.
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+    <hr />
+@{
+    var prevDisabled = "";
+    var nextDisabled = "";
+    if (Model.PageNum <= 1)
+    {
+        prevDisabled = "disabled";
+    }
+    if (Model.PageNum >= Model.TotalPages)
+    {
+        nextDisabled = "disabled";
+    }
+}
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        <li class="page-item @prevDisabled"><a class="page-link" asp-page="./Index" asp-route-PageNum="@(Model.PageNum - 1)">Previous</a></li>
+        <li class="page-item @nextDisabled"><a class="page-link" asp-page="./Index" asp-route-PageNum="@(Model.PageNum + 1)">Next</a></li>
+    </ul>
+</nav>
+</div>
